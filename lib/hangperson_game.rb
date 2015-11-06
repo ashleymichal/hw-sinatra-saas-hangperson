@@ -8,8 +8,32 @@ class HangpersonGame
   # def initialize()
   # end
   
+  attr_accessor :word, :guesses, :wrong_guesses
   def initialize(word)
     @word = word
+    @guesses = ""
+    @wrong_guesses = ""
+  end
+  
+  def guess(letter)
+    raise ArgumentError unless letter =~ /\w+/
+    return false if guesses + wrong_guesses =~ /#{letter}/i
+    if word =~ /#{letter}/i
+      guesses << letter
+    else
+      wrong_guesses << letter
+    end
+  end
+  
+  def word_with_guesses
+    matcher = guesses.empty? ? /./ : /[^#{guesses}]/
+    word.gsub(matcher, '-')
+  end
+  
+  def check_win_or_lose
+    return :lose if wrong_guesses.length >= 7
+    return :win if word == word_with_guesses
+    :play
   end
 
   def self.get_random_word
